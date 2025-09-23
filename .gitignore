@@ -1,4 +1,6 @@
 # Archivos a ignorar
 desktop.ini
 .gitkeep
+
+# Carpetas a ignorar
 __pycache__/
