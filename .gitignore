@@ -1,3 +1,4 @@
 # Archivos a ignorar
 desktop.ini
 .gitkeep
+__pycache__/
