@@ -16,7 +16,7 @@ def variables_nulas(df):
         print('Ninguna columna tiene valores nulos. Puedes continuar con tu estudio.')
     else: 
         col_nulos = nulos.loc[nulos['%_nulos']!=0, 'columna'].to_list() 
-        display(nulos[mascara])
+        display(nulos[mascara].sort_values(ascending=False))
         for i in col_nulos:
             print(f'La siguiente columna tiene valores nulos: {i}')
         return col_nulos
