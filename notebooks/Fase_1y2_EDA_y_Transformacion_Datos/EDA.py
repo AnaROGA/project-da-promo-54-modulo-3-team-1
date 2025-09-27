@@ -76,3 +76,61 @@ def categorias(df):
         print('_' * 100)
 
 # %%
+
+# USO: realiza la imputación de datos faltantes con ayuda de un diccionario creado previamente. Se le tiene 
+# que pasar los siguientes parametros a la función: 
+#   - df -> dataframe
+#   - col_imput -> columna a imputar (str)
+#   - col_ref -> columna de referencia para la columna a imputar (str)
+#   - dic -> diccionario creado previamente  
+
+def imputacion_categorica(df, col_imput, col_ref, dic): 
+    # Normalizar columna jobrole
+    df[col_ref] = df[col_ref].str.strip().str.lower()
+    # Normalizar claves del diccionario también
+    dict_clean = {k.lower().strip(): v for k, v in dic.items()}
+    # Aplicar el mapping
+    df[col_imput] = (
+        df[col_ref].map(dict_clean).fillna(df[col_imput]))
+    
+    porc_nulo = round(df[col_imput].isnull().sum()/df[col_imput].shape[0]*100, 2)
+
+    display(df[[col_ref, col_imput]].head(10))
+
+    if porc_nulo > 0: 
+        print(f'No se han imputado todas las filas de la columna {col_imput}.')
+        print(f'Comprueba si hay algún error en el diccionario el porcentaje de nulos es del {porc_nulo}%')
+    else: 
+        print(f'Se han imputado todas las filas de la columna {col_imput}.')
+
+
+# %%
+
+# Explicar
+def limpiar(df, col_limpiar, limp, transf): 
+    if type(limp) == str: 
+        limp = [limp]
+    if type(transf) == str: 
+        transf = [transf]
+    
+    if type(col_limpiar) == list: 
+        cols = col_limpiar
+    elif type(col_limpiar) == str: 
+        cols = [col_limpiar]
+    else:
+        print('ERROR: Tipo no válido en col_limpiar.')
+    
+    for c in cols: 
+        df[c] = df[c].astype(str)
+
+        if len(limp) != len(transf): 
+            print(f'ERROR: "limp" y "transf" deben tener la misma longitud (columna {c})')
+            continue
+
+        for l, t in zip(limp, transf): 
+            df[c] = df[c].str.replace(l, t, regex = False)
+        
+        print(f'Limpiezas aplicada en la columna {c}')
+
+    display(df.head(10))
+
