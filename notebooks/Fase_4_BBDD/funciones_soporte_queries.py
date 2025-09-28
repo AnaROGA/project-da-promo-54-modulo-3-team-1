@@ -19,7 +19,7 @@ print("Tabla 'Departamento' creada.")
 query_creacion_tabla_puesto = '''
 CREATE TABLE IF NOT EXISTS Puesto (
   PuestoID INT AUTO_INCREMENT PRIMARY KEY,
-  NombrePuesto VARCHAR(100) NOT NULL UNIQUE
+  NombrePuesto VARCHAR(100) NOT NULL UNIQUE,
   NivelPuesto INT
   );'''
 # 12  jobrole --> object 
@@ -54,7 +54,7 @@ print("Tabla 'Nivel_Satisfaccion' creada.")
     # Tabla E: Condiciones_Laborales
 query_creacion_tabla_condiciones_laborales = '''
 CREATE TABLE IF NOT EXISTS Condiciones_Laborales (
-  CLaborales ID INT AUTO_INCREMENT PRIMARY KEY,
+  CLaboralesID INT AUTO_INCREMENT PRIMARY KEY,
   ViajesTrabajo VARCHAR(50), 
   DistanciaVivienda INT, 
   NivelImplicacion INT,
@@ -86,12 +86,12 @@ CREATE TABLE IF NOT EXISTS Condiciones_Laborales (
 # 27  remotework -->  object
 print("Tabla 'Condiciones_Laborales' creada.")
 
-# --- 3. DEFINICIÓN DE TABLA CENTRAL (Con FKs) ---
+# --- DEFINICIÓN DE TABLA CENTRAL (Con FKs) ---
 
 # Tabla F: Empleados (Tabla Central)
 query_creacion_tabla_empleados = '''
 CREATE TABLE IF NOT EXISTS Empleados (
-    EmployeeNumber_CSV INT PRIMARY KEY,
+    EmployeeNumber INT PRIMARY KEY,
     Edad INT NOT NULL,
     EnEmpresa VARCHAR(3),
     Genero VARCHAR(10),
@@ -99,18 +99,18 @@ CREATE TABLE IF NOT EXISTS Empleados (
     AñoNacimiento YEAR, 
 
     -- Claves Foráneas
-    DepartamentoFK INT NOT NULL,
-    PuestoFK INT NOT NULL,
-    EducacionFK INT NOT NULL,
-    NSatisfaccionFK INT NOT NULL,
-    CLaboralesFK ID,
+    DepartamentoFK INT,
+    PuestoFK INT,
+    EducacionFK INT,
+    NSatisfaccionFK INT,
+    CLaboralesFK INT,
       
     -- Definición de Relaciones de Claves Foráneas
-    FOREIGN KEY (DepartamentoFK) REFERENCES Departamento (DepartamentoID) ON DELETE RESTRICT ON UPDATE CASCADE,
-    FOREIGN KEY (PuestoFK) REFERENCES Puesto(PuestoID) ON DELETE RESTRICT ON UPDATE CASCADE,
-    FOREIGN KEY (EducacionFK) REFERENCES Educacion_Nivel_Campo(EducacionID) ON DELETE RESTRICT ON UPDATE CASCADE,
-    FOREIGN KEY (NSatisfaccionFK) REFERENCES Nivel_Satisfaccion(NSatisfaccionID) ON DELETE RESTRICT ON UPDATE CASCADE,
-    FOREIGN KEY (CLaboralesFK) REFERENCES Condiciones_Laborales(CLaboralesID) ON DELETE RESTRICT ON UPDATE CASCADE
+    FOREIGN KEY (DepartamentoFK) REFERENCES Departamento (DepartamentoID) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (PuestoFK) REFERENCES Puesto(PuestoID) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (EducacionFK) REFERENCES Educacion_Nivel_Campo(EducacionID) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (NSatisfaccionFK) REFERENCES Nivel_Satisfaccion(NSatisfaccionID) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (CLaboralesFK) REFERENCES Condiciones_Laborales(CLaboralesID) ON DELETE CASCADE ON UPDATE CASCADE
     );'''
 # 7   employeenumber -->  int64 (ya únicos en el df)
 # 0   age --> int64 
@@ -119,3 +119,12 @@ CREATE TABLE IF NOT EXISTS Empleados (
 # 14  maritalstatus --> object 
 # 25  datebirth --> int64  
 print("Tabla 'Empleados' creada con todas las FKs.")
+
+# Inserción de Datos
+    # Departamento
+query_insercion_departamento = '''
+INSERT IGNORE INTO departamento (NombreDepartamento)
+VALUES (%s);
+'''
+#  3   department --> object 
+print("Datos insertado en tabla 'Departamento'.")

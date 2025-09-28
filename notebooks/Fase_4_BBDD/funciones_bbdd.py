@@ -59,44 +59,41 @@ def creacion_bbdd(cnx,query_creacion_bbdd, query_movernos_bbdd):
 
 # %%    
 
-def acceso_bbdd(cnx,sql_bbdd):  # USE nombre_bbdd
+def acceso_bbdd(cnx,nombre_bbdd):  # USE nombre_bbdd
     mycursor = cnx.cursor()   # creamos nuestro cursor (nos abre mysql)
     print(f"Variable 'mycursor' creada.")
     try:
-        mycursor.execute(sql_bbdd)
+        mycursor.execute(f'USE {nombre_bbdd};')
         print(f"Estamos en la bbdd indicada")
         return mycursor
-    except:
-        print(f"No ha sido posible moverse a la base de datos indicada.")
+    except Exception as e:
+        print(f"No ha sido posible moverse a la base de datos indicada:\n{e}")
 
 
 # %%
 
 def creacion_tablas(mycursor, *args): # para meter tantas queries como queramos
-    num_tablas = 0
     try:
         for query in args:
             mycursor.execute(query)
-            num_tablas += 1
-            print(f"{num_tablas} tabla/s creada/s con exito.")
-    except:
-        print("No se ha/n podido crear la/s tabla/s.")
+            print('Tabla creada con éxito.')
+    except Exception as e:
+        print("Error al crear la tabla:", e)
 
 # %%
 
-def insercion_tabla_artistas(mycursor, cnx, df):
-    tabla_artistas=[]
-    for row in df.itertuples():
-        tabla_artistas.append((row.nombre_artista, row.oyentes, row.reproducciones))
+def insercion_tabla_departamento(mycursor, cnx, df):
+    tabla_departamento=[]
+    for row in df[['department']].itertuples():
+        tabla_departamento.append((row.department,))
     
     try:
-        mycursor.executemany(query.query_insercion_tabla_artistas, tabla_artistas)
+        mycursor.executemany(query.query_insercion_departamento, tabla_departamento)
         cnx.commit()
-        print(f"Datos insertados correctamente {mycursor.rowcount} total")
-    except:
-        print(f"No se ha podido realizar la insercion")
+        print(f"Datos insertados correctamente: {mycursor.rowcount} filas.")
+    except Exception as e:
+        print(f"No se ha podido realizar la inserción:\n{e}")
         
-    return tabla_artistas
 # %%
 
 # Cerramos la conexión
