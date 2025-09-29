@@ -179,9 +179,7 @@ def limpiar(df, col_limpiar, limp, transf):
         for l, t in zip(limp, transf): 
             df_copia[c] = df_copia[c].str.replace(l, t, regex = False)
         
-        print(f'Limpiezas aplicada en la columna {c}')
-
-    display(df_copia.head(10))
+        print(f"Limpiezas aplicada en la columna '{c}'.")
 
     return df_copia
 
@@ -268,5 +266,26 @@ def imputacion_conversion_datos_numericos(df, cols, dic_mapeo, redondeo=0):
         print(f"Columna '{col}' procesada:")
         print(df_copia[col].head(10))
         print(f"Tipo final: {df_copia[col].dtype}\n")
+
+    return df_copia
+
+# %%
+
+def imputacion_conversion_datos_categoricos(df, cols, dic_mapeo):
+    """
+    completar
+    """
+    df_copia = df.copy()
+
+    if isinstance(cols, str): 
+        cols = [cols]
+
+    for col in cols: 
+        df_copia[col] = df_copia[col].replace(dic_mapeo)
+
+        print(f"Columna '{col}' estandarizada.")
+        print(f"\nNuevo conteo de '{col}':")
+        print(df_copia[col].value_counts())
+        print('_' * 100)
 
     return df_copia
