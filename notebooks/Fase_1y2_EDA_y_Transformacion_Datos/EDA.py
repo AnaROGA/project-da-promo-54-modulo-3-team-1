@@ -50,52 +50,73 @@ def duplicados_ver(df, list_sort_by):
     mascara = df.duplicated(keep=False)
     display(df[mascara].sort_values(by = list_sort_by))
 
+
 #%% 
 
 def func_duplicados(df): 
-    if df.duplicated().sum() > 0:
-        print(f'El número de filas es de {df.shape[0]}')
-        print(f'El número de duplicados es: {df.duplicated().sum()}.')
+    df_copia = df.copy()
+
+    if df_copia.duplicated().sum() > 0:
+        print(f'El número de filas es de {df_copia.shape[0]}')
+        print(f'El número de duplicados es: {df_copia.duplicated().sum()}.')
         print('Borrando duplicados...')
-        df.drop_duplicates(inplace = True)
+        df_copia.drop_duplicates(inplace = True)
         print(f'Se han eliminado los duplicados.')
         print(f'Comprobando que el número de duplicados sea cero.')
-        print(f'Comprobación: {df.duplicated().sum()}')
-        print(f'Ahora el número de filas es: {df.shape[0]}')
+        print(f'Comprobación: {df_copia.duplicated().sum()}')
+        print(f'Ahora el número de filas es: {df_copia.shape[0]}')
     else: 
         print('Este dataframe no tiene duplicados.')
+
+    return df_copia
     
 # %%
 
 # USO: Devuelve tablas con las diferentes categorias de las columnas que encontramos en el dataframe. Devolverá tantas 
 # tablas como columnas haya en el dataframe. 
-def categorias(df): 
+def categorias(df):
     for col in df.select_dtypes(include='O').columns:
         print(f"Las categorías que tenemos para la columna {col} son:")
         display(df[col].value_counts().reset_index())
         print('_' * 100)
 
+
 # %%
 
-# USO: realiza la imputación de datos faltantes con ayuda de un diccionario creado previamente. Se le tiene 
-# que pasar los siguientes parametros a la función: 
-#   - df -> dataframe
-#   - col_imput -> columna a imputar (str)
-#   - col_ref -> columna de referencia para la columna a imputar (str)
-#   - dic -> diccionario creado previamente  
+def imputacion_categorica(df, col_imput, col_ref, dic):
+    """
+    Imputa valores faltantes en 'col_imput' con ayuda de un diccionario que mapea valores de 'col_ref'.
+    
+    Parámetros
+    ----------
+    df : pd.DataFrame
+        DataFrame de entrada
+    col_imput : str
+        Columna objetivo donde se imputan nulos.
+    col_ref : str
+        Columna de referencia para buscar el valor imputado según 'dic'.
+    dic : dict
+        Diccionario de mapeo: clave = valor en col_ref, valor = imputación para col_imput
 
-def imputacion_categorica(df, col_imput, col_ref, dic): 
+    
+    Retorna
+    -------
+    pd.DataFrame
+
+    """
+    df_copia = df.copy()
+
     # Normalizar columna jobrole
-    df[col_ref] = df[col_ref].str.strip().str.lower()
+    df_copia[col_ref] = df_copia[col_ref].str.strip().str.lower()
     # Normalizar claves del diccionario también
     dict_clean = {k.lower().strip(): v for k, v in dic.items()}
     # Aplicar el mapping
-    df[col_imput] = (
-        df[col_ref].map(dict_clean).fillna(df[col_imput]))
+    df_copia[col_imput] = (
+        df_copia[col_ref].map(dict_clean).fillna(df_copia[col_imput]))
     
-    porc_nulo = round(df[col_imput].isnull().sum()/df[col_imput].shape[0]*100, 2)
+    porc_nulo = round(df_copia[col_imput].isnull().sum()/df_copia[col_imput].shape[0]*100, 2)
 
-    display(df[[col_ref, col_imput]].head(10))
+    display(df_copia[[col_ref, col_imput]].head(10))
 
     if porc_nulo > 0: 
         print(f'No se han imputado todas las filas de la columna {col_imput}.')
@@ -103,6 +124,7 @@ def imputacion_categorica(df, col_imput, col_ref, dic):
     else: 
         print(f'Se han imputado todas las filas de la columna {col_imput}.')
 
+    return df_copia
 
 # %%
 
@@ -113,6 +135,28 @@ def imputacion_categorica(df, col_imput, col_ref, dic):
 #   - limp -> lo que se quiere quitar o lipiar de los datos (str)
 #   - transf -> por lo que se quiere sustituir (str)  
 def limpiar(df, col_limpiar, limp, transf): 
+    """
+    Limpia los datos de una o varias columnas del DataFrame.
+    
+    Parámetros
+    ----------
+    df : pd.DataFrame
+        DataFrame de entrada
+    col_limpiar : str o list
+        Nombre(s) de la(s) columna(s) a limpiar.
+    limp : str o list
+        Lo que se quiere quitar o limpiar de los datos.
+    transf : str o list
+        Por lo que se sustituye lo anterior. 
+    
+    Retorna
+    -------
+    pd.DataFrame
+        DataFrame con los datos de las columnas deseadas limpios.
+    """
+
+    df_copia = df.copy()
+
     if type(limp) == str: 
         limp = [limp]
     if type(transf) == str: 
@@ -126,35 +170,103 @@ def limpiar(df, col_limpiar, limp, transf):
         print('ERROR: Tipo no válido en col_limpiar.')
     
     for c in cols: 
-        df[c] = df[c].astype(str)
+        df_copia[c] = df_copia[c].astype(str)
 
         if len(limp) != len(transf): 
             print(f'ERROR: "limp" y "transf" deben tener la misma longitud (columna {c})')
             continue
 
         for l, t in zip(limp, transf): 
-            df[c] = df[c].str.replace(l, t, regex = False)
+            df_copia[c] = df_copia[c].str.replace(l, t, regex = False)
         
         print(f'Limpiezas aplicada en la columna {c}')
 
-    display(df.head(10))
+    display(df_copia.head(10))
+
+    return df_copia
 
 # %%
 
-# USO: Eliminar una o varias columnas de un DataFrame
 def columnas_a_eliminar(df, cols): 
+    """
+    Elimina una o varias columnas de un DataFrame.
+    
+    Parámetros
+    ----------
+    df : pd.DataFrame
+        DataFrame de entrada
+    cols : str o list
+        Nombre(s) de la(s) columna(s) a eliminar. 
+    
+    Retorna
+    -------
+    pd.DataFrame
+        DataFrame sin las columnas eliminadas.
+    """
+    df_copia = df.copy()
+
     if isinstance(cols, str):
         cols = [cols]
     # Verificar que las columnas existen en el dataframe
-    cols_exis = [c for c in cols if c in df.columns]
-    cols_no_encontradas = [c for c in cols if c not in df.columns]
+    cols_exis = [c for c in cols if c in df_copia.columns]
+    cols_no_encontradas = [c for c in cols if c not in df_copia.columns]
 
     if cols_no_encontradas: 
         print(f'ADVERTENCIA: estas columnas no existen en el DataFrame: {cols_no_encontradas}')
 
+    df_copia = df_copia.drop(columns = cols_exis)
+    
     if cols_exis: 
         print('¡Columnas eliminadas con éxito!')
-        print(f'Las columnas eliminadas son: {cols_exis}')   
+        print(f'Se eliminaron las siguientes {len(cols_exis)} columnas: {cols_exis}')
+        print(f'El DataFrame ahora tiene {df_copia.shape[1]} columnas.')   
     
-    df = df.drop(columns = cols_exis)
-    return df
+    
+    return df_copia
+# %%
+
+def imputacion_conversion_datos_numericos(df, cols, dic_mapeo, redondeo=0):
+    """
+    Convierte columnas con valores de texto a números usando un diccionario de mapeo.
+    Permite redondear y convertir a enteros si se desea.
+    
+    Parámetros
+    ----------
+    df : pd.DataFrame  
+        DataFrame de entrada
+    cols : str o list  
+        Columna(s) a procesar
+    dic_mapeo : dict  
+        Diccionario de mapeo {texto: número}
+    redondeo : int, default integer  
+        Número de decimales a redondear (0 = enteros)
+    
+    Retorna
+    -------
+    pd.DataFrame
+        DataFrame con columnas convertidas
+    """
+    df_copia = df.copy()
+
+    # Normalizar columnas
+    if isinstance(cols, str):
+        cols = [cols]
+
+    for col in cols:
+        # 1. Reemplazar texto por números según diccionario
+        df_copia[col] = df_copia[col].replace(dic_mapeo)
+
+        # 2. Convertir a numérico
+        df_copia[col] = pd.to_numeric(df_copia[col], errors="coerce")
+
+        # 3. Redondear según necesidad
+        if redondeo == 0:
+            df_copia[col] = df_copia[col].round(redondeo).astype("Int64")
+        else:
+            df_copia[col] = df_copia[col].round(redondeo)
+
+        print(f"Columna '{col}' procesada:")
+        print(df_copia[col].head(10))
+        print(f"Tipo final: {df_copia[col].dtype}\n")
+
+    return df_copia
