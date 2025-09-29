@@ -106,7 +106,12 @@ def imputacion_categorica(df, col_imput, col_ref, dic):
 
 # %%
 
-# Explicar
+# USO: realiza la limpieza de los datos que se encuentran en la columna a limpiar. Se le tiene 
+# que pasar los siguientes parametros a la función: 
+#   - df -> dataframe
+#   - col_limpiar -> columna a limpiar (str)
+#   - limp -> lo que se quiere quitar o lipiar de los datos (str)
+#   - transf -> por lo que se quiere sustituir (str)  
 def limpiar(df, col_limpiar, limp, transf): 
     if type(limp) == str: 
         limp = [limp]
@@ -134,3 +139,22 @@ def limpiar(df, col_limpiar, limp, transf):
 
     display(df.head(10))
 
+# %%
+
+# USO: Eliminar una o varias columnas de un DataFrame
+def columnas_a_eliminar(df, cols): 
+    if isinstance(cols, str):
+        cols = [cols]
+    # Verificar que las columnas existen en el dataframe
+    cols_exis = [c for c in cols if c in df.columns]
+    cols_no_encontradas = [c for c in cols if c not in df.columns]
+
+    if cols_no_encontradas: 
+        print(f'ADVERTENCIA: estas columnas no existen en el DataFrame: {cols_no_encontradas}')
+
+    if cols_exis: 
+        print('¡Columnas eliminadas con éxito!')
+        print(f'Las columnas eliminadas son: {cols_exis}')   
+    
+    df = df.drop(columns = cols_exis)
+    return df
