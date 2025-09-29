@@ -223,7 +223,7 @@ def columnas_a_eliminar(df, cols):
     return df_copia
 # %%
 
-def imputacion_conversion_datos_numericos(df, cols, dic_mapeo, redondeo=0):
+def imputacion_conversion_datos_numericos(df: pd.DataFrame, cols: str | list[str], dic_mapeo: dict, redondeo: int = 0) -> pd.DataFrame:
     """
     Convierte columnas con valores de texto a números usando un diccionario de mapeo.
     Permite redondear y convertir a enteros si se desea.
@@ -271,9 +271,23 @@ def imputacion_conversion_datos_numericos(df, cols, dic_mapeo, redondeo=0):
 
 # %%
 
-def imputacion_conversion_datos_categoricos(df, cols, dic_mapeo):
+def imputacion_conversion_datos_categoricos(df: pd.DataFrame, cols: str | list[str], dic_mapeo: dict) -> pd.DataFrame:
     """
-    completar
+    Convierte columnas con textos erroneos a textos correctos usando un diccionario de mapeo.
+    
+    Parámetros
+    ----------
+    df : pd.DataFrame  
+        DataFrame de entrada
+    cols : str o list  
+        Columna(s) a procesar
+    dic_mapeo : dict  
+        Diccionario de mapeo {texto_error: texto_corregido}
+
+    Retorna
+    -------
+    pd.DataFrame
+        DataFrame con columnas corregidas
     """
     df_copia = df.copy()
 
@@ -289,3 +303,45 @@ def imputacion_conversion_datos_categoricos(df, cols, dic_mapeo):
         print('_' * 100)
 
     return df_copia
+
+# %%
+
+def columnas_a_numerico(df: pd.DataFrame, cols: str | list[str], cast_enteros: bool = True) -> pd.DataFrame:
+    """
+    Convierte columnas del DataFrame a tipo numérico usando pd.to_numeric(errors='coerce').
+
+    Parámetros
+    ----------
+    df : pd.DataFrame
+        DataFrame de entrada.
+    cols : str o list[str]
+        Columna(s) a convertir.
+    cast_enteros : bool, default True
+        Si True, si una columna resulta sin decimales (solo enteros o NaN),
+        se castea a 'Int64' (enteros que admiten NaN). Si no, queda en float64.
+
+    Retorna
+    -------
+    pd.DataFrame
+        DataFrame con la(s) columna(s) indicada(s) convertida(s) a numérica(s).
+    """
+    df_copia = df.copy()
+
+    if isinstance(cols, str):
+        cols = [cols]
+
+    for c in cols:
+        serie_num = pd.to_numeric(df_copia[c], errors="coerce")
+
+        if cast_enteros and serie_num.dropna().apply(lambda x: float(x).is_integer()).all():
+            df_copia[c] = serie_num.astype("Int64")
+        else:
+            df_copia[c] = serie_num.astype("float64")
+        
+        print(f"'{c}' convertida a numérica")
+        print(df_copia[c].value_counts(dropna=False))
+        print(df_copia[c].dtype)
+        print('_' * 100)
+
+    return df_copia
+# %%
