@@ -3,6 +3,7 @@
 # importamos librerias para manejo datos
 import pandas as pd
 from IPython.display import display
+from typing import Any
 
 #%%
 
@@ -417,7 +418,7 @@ def normalizacion_datos(df: pd.DataFrame, cols: str | list[str], capitalizar: bo
 
 # %%
 
-def imputar_na(df: pd.DataFrame, cols: str | list[str], imputar_por: any) -> pd.DataFrame: 
+def imputar_na(df: pd.DataFrame, cols: str | list[str], imputar_por: Any) -> pd.DataFrame: 
     """
     Imputa valores nulos en una o varias columnas de un DataFrame. Reemplaza los valores NaN
     en las columnas indicadas por un valor fijo especificado.
@@ -443,9 +444,14 @@ def imputar_na(df: pd.DataFrame, cols: str | list[str], imputar_por: any) -> pd.
         cols = [cols]
 
     for col in cols: 
-        df_copia[col] = df_copia[col].astype('object').fillna(imputar_por)
+        if col not in df_copia.columns:
+            print(f'Columnas no encontradas en el DataFrame: {col}')
+            continue
+
+        df_copia[col] = df_copia[col].fillna(imputar_por)
         print(f"Nulos en variable '{col}' imputado con '{imputar_por}'")
-        print(df[col].value_counts(dropna=False))
+        print(df_copia[col].value_counts(dropna=False))
         print("_" * 100)
 
     return df_copia
+# %%
