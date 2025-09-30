@@ -155,7 +155,7 @@ print("Datos insertados en tabla 'Educación'.")
     # Empleados
 query_insercion_empleados = '''
 INSERT IGNORE INTO empleados (EmployeeNumber, Edad, EnEmpresa, Genero, EstadoCivil, AnoNacimiento, DepartamentoFK, PuestoFK, EducacionFK)
-VALUES (%s,%s,%s,%s,%s,%s,%s,%s);
+VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s);
    '''
 # 7   employeenumber -->  int64 (ya únicos en el df)
 # 0   age --> int64 
