@@ -128,13 +128,7 @@ def imputacion_categorica(df, col_imput, col_ref, dic):
 
 # %%
 
-# USO: realiza la limpieza de los datos que se encuentran en la columna a limpiar. Se le tiene 
-# que pasar los siguientes parametros a la función: 
-#   - df -> dataframe
-#   - col_limpiar -> columna a limpiar (str)
-#   - limp -> lo que se quiere quitar o lipiar de los datos (str)
-#   - transf -> por lo que se quiere sustituir (str)  
-def limpiar(df, col_limpiar, limp, transf): 
+def limpiar(df: pd.DataFrame, col_limpiar: str | list[str], limp: str | list[str], transf: str | list[str]) -> pd.DataFrame: 
     """
     Limpia los datos de una o varias columnas del DataFrame.
     
@@ -153,6 +147,7 @@ def limpiar(df, col_limpiar, limp, transf):
     -------
     pd.DataFrame
         DataFrame con los datos de las columnas deseadas limpios.
+        En el caso de que sea una variable numérica, después habrá que hacer EDA.columnas_a_numerico()
     """
 
     df_copia = df.copy()
@@ -185,7 +180,7 @@ def limpiar(df, col_limpiar, limp, transf):
 
 # %%
 
-def columnas_a_eliminar(df, cols): 
+def columnas_a_eliminar(df: pd.DataFrame, cols: str | list[str]) -> pd.DataFrame: 
     """
     Elimina una o varias columnas de un DataFrame.
     
@@ -223,7 +218,8 @@ def columnas_a_eliminar(df, cols):
     return df_copia
 # %%
 
-def imputacion_conversion_datos_numericos(df: pd.DataFrame, cols: str | list[str], dic_mapeo: dict, redondeo: int = 0) -> pd.DataFrame:
+def imputacion_conversion_datos_numericos(df: pd.DataFrame, cols: str | list[str], dic_mapeo: dict, 
+                                          redondeo: int = 0, tipo: bool = True) -> pd.DataFrame:
     """
     Convierte columnas con valores de texto a números usando un diccionario de mapeo.
     Permite redondear y convertir a enteros si se desea.
@@ -237,7 +233,11 @@ def imputacion_conversion_datos_numericos(df: pd.DataFrame, cols: str | list[str
     dic_mapeo : dict  
         Diccionario de mapeo {texto: número}
     redondeo : int, default integer  
-        Número de decimales a redondear (0 = enteros)
+        Número de decimales a redondear (0 = enteros). 
+        Solo tiene sentido si tipo = True (por defecto)
+    tipo : bool, default True
+        Si True, la conversión es de texto a números. 
+        Si False, la conversión es de números a texto. 
     
     Retorna
     -------
@@ -250,22 +250,39 @@ def imputacion_conversion_datos_numericos(df: pd.DataFrame, cols: str | list[str
     if isinstance(cols, str):
         cols = [cols]
 
-    for col in cols:
-        # 1. Reemplazar texto por números según diccionario
-        df_copia[col] = df_copia[col].replace(dic_mapeo)
+    if tipo: 
 
-        # 2. Convertir a numérico
-        df_copia[col] = pd.to_numeric(df_copia[col], errors="coerce")
+        for col in cols:
+            # 1. Reemplazar texto por números según diccionario
+            df_copia[col] = df_copia[col].replace(dic_mapeo)
 
-        # 3. Redondear según necesidad
-        if redondeo == 0:
-            df_copia[col] = df_copia[col].round(redondeo).astype("Int64")
-        else:
-            df_copia[col] = df_copia[col].round(redondeo)
+            # 2. Convertir a numérico
+            df_copia[col] = pd.to_numeric(df_copia[col], errors="coerce")
 
-        print(f"Columna '{col}' procesada:")
-        print(df_copia[col].head(10))
-        print(f"Tipo final: {df_copia[col].dtype}\n")
+            # 3. Redondear según necesidad
+            if redondeo == 0:
+                df_copia[col] = df_copia[col].round(redondeo).astype("Int64")
+            else:
+                df_copia[col] = df_copia[col].round(redondeo)
+
+            print(f"Columna '{col}' procesada:")
+            print(df_copia[col].head(10))
+            print(f"Tipo final: {df_copia[col].dtype}\n")
+            print('_' * 100)
+    else: 
+        for col in cols: 
+            df_copia[col] = (
+                df_copia[col]
+                .astype(float) # Necesario si hay NaN y queremos convertir a int
+                .round() 
+                .astype('object') # Convertir a Object/String para poder hacer el reemplazo por texto
+                .replace(dic_mapeo)
+            )
+
+            print(f"Columna '{col}' procesada:\n")
+            # El conteo con dropna=False te mostrará también si quedan valores NaN
+            print(df_copia[col].value_counts(dropna=False))
+            print('_' * 100)
 
     return df_copia
 
@@ -299,7 +316,7 @@ def imputacion_conversion_datos_categoricos(df: pd.DataFrame, cols: str | list[s
 
         print(f"Columna '{col}' estandarizada.")
         print(f"\nNuevo conteo de '{col}':")
-        print(df_copia[col].value_counts())
+        print(df_copia[col].value_counts(dropna=False))
         print('_' * 100)
 
     return df_copia
@@ -344,4 +361,91 @@ def columnas_a_numerico(df: pd.DataFrame, cols: str | list[str], cast_enteros: b
         print('_' * 100)
 
     return df_copia
+
 # %%
+
+def normalizacion_datos(df: pd.DataFrame, cols: str | list[str], capitalizar: bool = False ) -> pd.DataFrame: 
+    """
+    Normaliza texto en una o varias columnas: pasa a minúsculas, elimina espacios extra 
+    (incluidos múltiples espacios internos) y, opcionalmente, capitaliza  cada palabra.
+
+    Parámetros
+    ----------
+    df:
+        pd.DataFrame
+        DataFrame de entrada.
+
+    cols:
+        str o list[str]
+        Columna(s) a normalizar.
+    
+    capitalizar:
+        bool, default False
+        Si False, no capitaliza cada una de las palabras del texto en los datos del DataFrame.
+        Si True, capitaliza cada una de las palabras del texto en los datos del DataFrame.
+
+    Retorna
+    -------
+    pd.DataFrame
+        DataFrame con la(s) columna(s) indicada(s) normalizada(s).
+    """
+    df_copia = df.copy()
+    
+    if isinstance(cols, str):
+        cols = [cols]
+
+    for c in cols: 
+        #Convertir a minúsculas y eliminar espacios extra
+        df_copia[c] = df_copia[c].str.lower().str.strip()
+
+        #Reemplazo de caracteres especiales y estandarización
+        # Reemplazar múltiples espacios internos con un solo espacio (por si acaso)
+        df_copia[c] = df_copia[c].str.replace(r'\s+', ' ', regex=True)
+
+        print(f"Columna '{c}' normalizada a minúsculas y sin espacios extra.")
+
+        if capitalizar:
+            df_copia[c] = df_copia[c].astype('string').str.title()
+            print(f"Columna '{c}' capitalizadas.")
+
+        # Muestra los nuevos valores únicos para verificar la limpieza
+        print("\nConteo de valores únicos después de la normalización:")
+        print(df_copia[c].value_counts())
+        print('_' * 100)
+
+    return df_copia
+
+# %%
+
+def imputar_na(df: pd.DataFrame, cols: str | list[str], imputar_por: any) -> pd.DataFrame: 
+    """
+    Imputa valores nulos en una o varias columnas de un DataFrame. Reemplaza los valores NaN
+    en las columnas indicadas por un valor fijo especificado.
+
+    Parámetros
+    ----------
+    df : pd.DataFrame
+        DataFrame de entrada.
+    cols : str o list[str]
+        Nombre de la columna o lista de columnas en las que se quiere imputar.
+    imputar_por : any
+        Valor con el que se reemplazarán los NaN (puede ser str, int, float, etc.).
+
+    Retorna
+    -------
+    pd.DataFrame
+        DataFrame con los valores nulos imputados en las columnas seleccionadas.
+
+    """
+    df_copia = df.copy()
+
+    if isinstance(cols, str):
+        cols = [cols]
+
+    for col in cols: 
+        df_copia[col] = df_copia[col].astype('object').fillna(imputar_por)
+        print(f"Nulos en variable '{col}' imputado con '{imputar_por}'")
+        print(df[col].value_counts(dropna=False))
+        print("_" * 100)
+
+    return df_copia
