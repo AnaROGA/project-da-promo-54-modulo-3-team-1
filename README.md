@@ -10,7 +10,7 @@ Proyecto Módulo 03 _ Transformando el Talento
 ### 🧩 ESTRUCTURA DEL REPOSITORIO
 
 ```
-📝 Proyecto TRANFORMANDO EL TALENTO
+📝 Proyecto TRANSFORMANDO EL TALENTO
 │
 ├── 📁 data
 │    ├── hr_raw_data.csv
@@ -19,15 +19,26 @@ Proyecto Módulo 03 _ Transformando el Talento
 ├── 📁 images 
 │
 ├── 📁 notebooks
-│    ├── Fase_1y2_EDA_y_Transformacion_Datos
-│    ├── Fase_3_Visualización_Datos
-│    └── Fase_4_BBDD
+│    ├── 📁 Fase_1y2_EDA_y_Transformacion_Datos
+│    │    ├── EDA.ipynb
+│    │    └── EDA.py
+│    │
+│    ├── 📁 Fase_3_Visualización_Datos
+│    │    ├── visualizacion_datos.ipynb
+│    │    └── visualizaciones.py
+│    │
+│    └── 📁 Fase_4_BBDD
+│         ├── integracion_py_sql.ipynb
+│         ├── funciones_bbdd.py
+│         └── funciones_soporte_queries.py
 │
 ├── 📁 presentacion
 │    └── optimizacion_talento.pptx 
 │
 ├── 📁 sql
 │    └── bbdd_optimizacion_talento.sql 
+│
+├── .gitignore
 │
 └── README.md
 ```
