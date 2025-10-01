@@ -12,7 +12,21 @@ import funciones_soporte_queries as query
 
 # conectamos Phyton a mySQL con manejo de errores
 
-def conexion_servidor(password):  # 'AlumnaAdalab'
+def conexion_servidor(password:str):  # 'AlumnaAdalab'
+    """
+    Conexión con el servidor donde se sitúa nuestra base de datos.
+    
+    Parámetros
+    ----------
+    password : str
+        Contraseña del servidor.
+    
+    Retorna
+    -------
+    cnx :
+        Variable con el conector, que establece la conexión.
+
+    """
     try:
         # Intenta hacer la conexión con SQL
         cnx = mysql.connector.connect(
@@ -44,6 +58,24 @@ def conexion_servidor(password):  # 'AlumnaAdalab'
 # Creación BASE DE DATOS:
 
 def creacion_bbdd(cnx,query_creacion_bbdd, query_movernos_bbdd):
+    """
+    Crea el schema/base de datos y nos ubica en ella.
+    
+    Parámetros
+    ----------
+    cnx : 
+        Variable con el conector, que establece la conexión.
+    query_creacion_bbdd: str
+        Función de lenguaje sql para creación de la base de datos.
+    query_movernos_bbdd: str
+        Función de lenguaje sql para situarnos en la base de datos que acabamos de crear.
+    
+    Retorna
+    -------
+    mycursor :
+        Variable con el cursor, la llave para la conexión.
+
+    """
     mycursor = cnx.cursor()   # creamos nuestro cursor (nos abre mysql)
     
     try:
@@ -59,7 +91,23 @@ def creacion_bbdd(cnx,query_creacion_bbdd, query_movernos_bbdd):
 
 # Aceso a BASE DE DATOS existente:
 
-def acceso_bbdd(cnx,nombre_bbdd):  # USE nombre_bbdd
+def acceso_bbdd(cnx,nombre_bbdd: str):  # USE nombre_bbdd
+    """
+    Accede a la base de datos de trabajo.
+    
+    Parámetros
+    ----------
+    cnx : 
+        Variable con el conector, que establece la conexión.
+    nombre_bbdd: str
+        Nombre de la base de datos a acceder.
+    
+    Retorna
+    -------
+    mycursor :
+        Variable con el cursor, la llave para la conexión.
+
+    """
     mycursor = cnx.cursor()   # creamos nuestro cursor (nos abre mysql)
     print(f"Variable 'mycursor' creada.")
     try:
@@ -75,6 +123,17 @@ def acceso_bbdd(cnx,nombre_bbdd):  # USE nombre_bbdd
 # Creación de TABLAS
 
 def creacion_tablas(mycursor, *args): # para meter tantas queries como queramos
+    """
+    Crea las tablas dentro de una base de datos.
+    
+    Parámetros
+    ----------
+    mycursor :
+        Variable con el cursor, la llave para la conexión.
+    *args: 
+        Argumentos posicionales, separados por comas.
+
+    """
     try:
         for query in args:
             mycursor.execute(query)
@@ -88,7 +147,20 @@ def creacion_tablas(mycursor, *args): # para meter tantas queries como queramos
 
     # Departamento
 
-def insercion_tabla_departamento(mycursor, cnx, df_trabajo):
+def insercion_tabla_departamento(mycursor, cnx, df_trabajo: pd.DataFrame):
+    """
+    Inserta datos en la tabla 'departamento'.
+    
+    Parámetros
+    ----------
+    mycursor :
+        Variable con el cursor, la llave para la conexión.
+    cnx : 
+        Variable con el conector, que establece la conexión.
+    df : pd.DataFrame
+        DataFrame de entrada
+
+    """
     # quitamos los valores duplicados
     df = df_trabajo[['department']].drop_duplicates() # 3 entradas
     # iteramos en el df para sacar los valores que necesitamos
@@ -106,7 +178,20 @@ def insercion_tabla_departamento(mycursor, cnx, df_trabajo):
         
     # Puesto
 
-def insercion_tabla_puesto(mycursor, cnx, df_puesto):
+def insercion_tabla_puesto(mycursor, cnx, df_puesto: pd.DataFrame):
+    """
+    Inserta datos en la tabla 'puesto'.
+    
+    Parámetros
+    ----------
+    mycursor :
+        Variable con el cursor, la llave para la conexión.
+    cnx : 
+        Variable con el conector, que establece la conexión.
+    df : pd.DataFrame
+        DataFrame de entrada
+
+    """
     # quitamos los valores duplicados
     df= df_puesto[['jobrole', 'joblevel']]
     df = df.drop_duplicates().reset_index(drop = True)  # 26 entradas
@@ -126,6 +211,19 @@ def insercion_tabla_puesto(mycursor, cnx, df_puesto):
     # Educación
 
 def insercion_tabla_educacion(mycursor, cnx, df_educacion):
+    """
+    Inserta datos en la tabla 'educación'.
+    
+    Parámetros
+    ----------
+    mycursor :
+        Variable con el cursor, la llave para la conexión.
+    cnx : 
+        Variable con el conector, que establece la conexión.
+    df : pd.DataFrame
+        DataFrame de entrada
+
+    """
     # quitamos los valores duplicados
     df = df_educacion[['education', 'educationfield']]
     df = df.drop_duplicates().reset_index(drop = True)   # 29 entradas
@@ -149,6 +247,19 @@ def insercion_tabla_educacion(mycursor, cnx, df_educacion):
     # Empleados <-- tabla principal, KP y KF
 
 def insercion_tabla_empleados(mycursor, cnx, df):
+    """
+    Inserta datos en la tabla 'empleados'.
+    
+    Parámetros
+    ----------
+    mycursor :
+        Variable con el cursor, la llave para la conexión.
+    cnx : 
+        Variable con el conector, que establece la conexión.
+    df : pd.DataFrame
+        DataFrame de entrada
+
+    """
     # Obtener IDs FOREIGN KEYS de las otras tablas YA CREADAS 
     mycursor.execute(query.query_id_tabla_departamento)
     departamentoID = {nombre: id for id, nombre in mycursor.fetchall()} # <-- diccionario
@@ -197,6 +308,19 @@ def insercion_tabla_empleados(mycursor, cnx, df):
     # Nivel_Satisfaccion <-- KF
 
 def insercion_tabla_nivel_satisfaccion(mycursor, cnx, df):
+    """
+    Inserta datos en la tabla 'nivel de satisfacción'.
+    
+    Parámetros
+    ----------
+    mycursor :
+        Variable con el cursor, la llave para la conexión.
+    cnx : 
+        Variable con el conector, que establece la conexión.
+    df : pd.DataFrame
+        DataFrame de entrada
+
+    """
     # iteramos en el df para sacar los valores que necesitamos
     tabla_nivel_satisfaccion =[]
     for row in df[['environmentsatisfaction', 'jobsatisfaction', 'relationshipsatisfaction', 'employeenumber']].itertuples():
@@ -219,6 +343,19 @@ def insercion_tabla_nivel_satisfaccion(mycursor, cnx, df):
     # Condiciones_Laborales
 
 def insercion_tabla_condiciones_laborales(mycursor, cnx, df):
+    """
+    Inserta datos en la tabla 'condiciones laborales'.
+    
+    Parámetros
+    ----------
+    mycursor :
+        Variable con el cursor, la llave para la conexión.
+    cnx : 
+        Variable con el conector, que establece la conexión.
+    df : pd.DataFrame
+        DataFrame de entrada.
+
+    """
     # iteramos en el df para sacar los valores que necesitamos
     tabla_laborales =[]
     for row in df[['businesstravel', 'distancefromhome', 'jobinvolvement', 'numcompaniesworked', 'overtime', 'performancerating', 'stockoptionlevel', 'trainingtimeslastyear', 'worklifebalance', 'yearsatcompany', 'yearssincelastpromotion', 'yearswithcurrmanager', 'salary', 'remotework', 'employeenumber']].itertuples():
@@ -254,6 +391,14 @@ def insercion_tabla_condiciones_laborales(mycursor, cnx, df):
 
 # Cerramos la conexión
 def cerrar_conexion(cnx):
+    """
+    Cierra la conexion abierta con mysql.
+    
+    Parámetros
+    ----------
+    cnx : 
+
+    """
     cnx.close()
     print("Conexión cerrada.")
 

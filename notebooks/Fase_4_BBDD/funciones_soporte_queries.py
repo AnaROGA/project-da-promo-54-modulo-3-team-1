@@ -152,6 +152,23 @@ print("Datos insertados en tabla 'Educación'.")
 
 #####  Tabla ppal y dependientes
 
+# Obtención de datos ya existentes en las tablas creadas:
+    # DepartamentoFK
+query_id_tabla_departamento = '''
+SELECT DepartamentoID, NombreDepartamento 
+FROM Departamento;
+'''
+    # PuestoFK
+query_id_tabla_puesto = '''
+SELECT PuestoID, NombrePuesto, NivelPuesto 
+FROM Puesto;
+'''
+    # EducacionFK
+query_id_tabla_educacion = '''
+SELECT EducacionID, Nivel, Campo
+FROM Educacion_Nivel_Campo;
+'''
+
     # Empleados
 query_insercion_empleados = '''
 INSERT IGNORE INTO empleados (EmployeeNumber, Edad, EnEmpresa, Genero, EstadoCivil, AnoNacimiento, DepartamentoFK, PuestoFK, EducacionFK)
@@ -164,21 +181,6 @@ VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s);
 # 14  maritalstatus --> object 
 # 25  datebirth --> int64  
 print("Tabla 'Empleados' creada con todas las FKs.")
-
-query_id_tabla_departamento = '''
-SELECT DepartamentoID, NombreDepartamento 
-FROM Departamento;
-'''
-
-query_id_tabla_puesto = '''
-SELECT PuestoID, NombrePuesto, NivelPuesto 
-FROM Puesto;
-'''
-
-query_id_tabla_educacion = '''
-SELECT EducacionID, Nivel, Campo
-FROM Educacion_Nivel_Campo;
-'''
 
     # Nivel_Satisfaccion
 query_insercion_nivel_satisfaccion  = '''
