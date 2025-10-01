@@ -23,7 +23,8 @@ Proyecto Módulo 03 _ Transformando el Talento
 │    ├── Fase_3_Visualización_Datos
 │    └── Fase_4_BBDD
 │
-├── 📁 presentacion 
+├── 📁 presentacion
+│    └── optimizacion_talento.pptx 
 │
 ├── 📁 sql
 │    └── bbdd_optimizacion_talento.sql 
@@ -73,11 +74,19 @@ Finalizado, con posibilidad de generar nuevos features.
 ## CAPTURAS DE PANTALLA
 
 ![alt text](<imagenes/Captura de pantalla 2025-10-01 a la(s) 6.23.55 p. m..png>) 
+
 ![alt text](<imagenes/Captura de pantalla 2025-10-01 a la(s) 6.24.11 p. m..png>) 
+
 ![alt text](<imagenes/Captura de pantalla 2025-10-01 a la(s) 6.24.34 p. m..png>) 
+
 ![alt text](<imagenes/Captura de pantalla 2025-10-01 a la(s) 6.24.54 p. m..png>) 
+
 ![alt text](<imagenes/Captura de pantalla 2025-10-01 a la(s) 6.25.00 p. m..png>) 
+
 ![alt text](<imagenes/Captura de pantalla 2025-10-01 a la(s) 6.25.09 p. m..png>) 
+
 ![alt text](<imagenes/Captura de pantalla 2025-10-01 a la(s) 6.25.16 p. m..png>) 
+
 ![alt text](<imagenes/Captura de pantalla 2025-10-01 a la(s) 6.25.32 p. m..png>) 
+
 ![alt text](<imagenes/Captura de pantalla 2025-10-01 a la(s) 6.26.07 p. m..png>) 
